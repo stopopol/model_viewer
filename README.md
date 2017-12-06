@@ -1,1 +1,1 @@
-# model_viewer
+DEIMS-SDR Metadata models based on jquery.jsonbrowser
