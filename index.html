@@ -74,26 +74,39 @@
 				var fields_list = [];
 				var construct_sub_fields = [];
 				
-			
+				
 				for (i = 0; i < Object.keys(subset).length; i++) {
 				
 					var sub_fields = subset[Object.keys(subset)[i]];
 					var sub_fields_key = Object.keys(sub_fields);
 					var construct_sub_fields = [];
 					
-					
 					for (j = 0; j < sub_fields_key.length; j++) {
+					
+						
 						var thematic_group = Object.keys(subset)[i];
 						var current_field = sub_fields_key[j];
-					
 						var current_object = Object.keys(subset[thematic_group][current_field]);
-						construct_sub_fields.push({"name" : sub_fields_key[j], "size":2343});
+						
+						if (current_object.length > 1) {
+							
+							console.log("length of current object: " + current_object.length);
+							var children = [];
+							for (k = 0; k < current_object.length; k++) {
+								children.push({"name" : current_object[k], "size": ""});
+						
+							}
+							construct_sub_fields.push({"name" : sub_fields_key[j], "children": children});
+					
+						}
+						else {
+							construct_sub_fields.push({"name" : sub_fields_key[j], "size":2343});
+						}
 						
 					}  
 					
-					fields_list.push({"name" : Object.keys(subset)[i], "children":construct_sub_fields});
-				}
-			
+					fields_list.push({"name" : Object.keys(subset)[i], "children" : construct_sub_fields});
+				}		
 				
 				var b = {
 					"name": data["name"] + data["version"], 
