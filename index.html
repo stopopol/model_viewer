@@ -40,7 +40,7 @@
 			
 			<h3>Diagram of model</h2>
 			<div id="model-container">
-				<svg id="svg_container" width="960" height="0"></svg>
+				<svg id="svg_container" width="0" height="0"></svg>
 			</div>
 		</div>
 
@@ -69,43 +69,96 @@
 			
 				// https://bl.ocks.org/mbostock/4339083
 				
+				// actual content of json
 				var subset = data["content"];
-				var new_object = [];
 				var fields_list = [];
 				var construct_sub_fields = [];
+				
+				// TODO: simplify recursive loop using this function
+				// take object 
+				function eachRecursive(obj, complete_object) {
+					var complete_object = [];
+					for (var k in obj) {
+						if (typeof obj[k] == "object" && obj[k] !== null) {
+							// case children
+							eachRecursive(obj[k]);
+							//console.log("working in if. value is: " + k + "; type is: " + typeof(k));
+							// push children too
+							//complete_object.push({"name" : k, "children":2343})
+							
+						}
+						else {
+							// case no children
+							//console.log("working in else. value is: " + k + "; type is: " + typeof(k));
+							complete_object.push({"name" : k, "children":2343});
+						}
+							
+					}
+					return complete_object;
+				}
+				
+			
+				console.log(eachRecursive(subset));
 				
 				
 				for (i = 0; i < Object.keys(subset).length; i++) {
 				
-					var sub_fields = subset[Object.keys(subset)[i]];
-					var sub_fields_key = Object.keys(sub_fields);
+					var first_level_keys = subset[Object.keys(subset)[i]];
+					var sub_fields_key = Object.keys(first_level_keys);
 					var construct_sub_fields = [];
 					
 					for (j = 0; j < sub_fields_key.length; j++) {
 					
-						
 						var thematic_group = Object.keys(subset)[i];
 						var current_field = sub_fields_key[j];
 						var current_object = Object.keys(subset[thematic_group][current_field]);
 						
 						if (current_object.length > 1) {
 							
-							console.log("length of current object: " + current_object.length);
 							var children = [];
 							for (k = 0; k < current_object.length; k++) {
-								children.push({"name" : current_object[k], "size": ""});
-						
+							
+								// if object has children
+								if (subset[thematic_group][current_field][current_object[k]].length > 1) {
+									
+									var temp_obj = [];
+									
+										// if current case is array
+										if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
+											
+											var subsub_set = subset[thematic_group][current_field][current_object[k]];
+											var tempster = [];
+											for (var l = 0; l < subsub_set.length; l++) {
+											
+												temp_obj.push({"name" : subsub_set[l], "size": ""});
+												
+											} 
+
+										}
+										// else just print it
+										else {
+											temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
+										}
+									
+									children.push({"name" : current_object[k], "children": temp_obj});
+								}
+								// if object has no children
+								else {
+									children.push({"name" : current_object[k], "size": ""});
+								}
+							
 							}
 							construct_sub_fields.push({"name" : sub_fields_key[j], "children": children});
 					
 						}
 						else {
-							construct_sub_fields.push({"name" : sub_fields_key[j], "size":2343});
+							construct_sub_fields.push({"name" : sub_fields_key[j], "size": 2343});
 						}
 						
 					}  
 					
 					fields_list.push({"name" : Object.keys(subset)[i], "children" : construct_sub_fields});
+
 				}		
 				
 				var b = {
@@ -114,8 +167,9 @@
 				}
 				var read_json = b;
 				
+				// TODO: get viewport height and enter it under width
 				var margin = {top: 20, right: 120, bottom: 20, left: 220},
-					width = 960 - margin.right - margin.left,
+					width = 1960 - margin.right - margin.left,
 					height = 800 - margin.top - margin.bottom;
 
 				var i = 0,
