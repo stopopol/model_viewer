@@ -77,6 +77,30 @@
 				// TODO: simplify recursive loop using this function
 				// take object 
 				// push each term with its complete path?
+				function checkinputtype(testee) {
+					// object
+					var output = "_unknown";
+					if (testee !== null && typeof testee === 'object') {			
+						output = "object";
+					}
+					// array
+					if (Array.isArray(testee)) {
+						output = "array";					
+					}
+					// null or undefined
+					if (testeee == null){
+						output = "null";
+					}
+					// string 
+					if (typeof testee === 'string' || testeee instanceof String) {
+						output = "string";
+					}
+					// number
+					if (_.isNumber(testee)) {
+						output = "number";
+					}
+				}
+				
 				function eachRecursive(obj, complete_object) {
 					var complete_object = [];
 					for (var k in obj) {
@@ -96,11 +120,7 @@
 							
 					}
 					return complete_object;
-				}
-				
-			
-				console.log(eachRecursive(subset));
-				
+				}		
 				
 				for (i = 0; i < Object.keys(subset).length; i++) {
 				
