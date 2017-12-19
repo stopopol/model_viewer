@@ -75,8 +75,7 @@
 				var construct_sub_fields = [];
 				
 				// TODO: simplify recursive loop using this function
-				// take object 
-				// push each term with its complete path?
+				// output relevant types
 				function checkinputtype(testee) {
 					// object
 					var output = "_unknown";
@@ -88,17 +87,18 @@
 						output = "array";					
 					}
 					// null or undefined
-					if (testeee == null){
+					if (testee == null){
 						output = "null";
 					}
 					// string 
-					if (typeof testee === 'string' || testeee instanceof String) {
+					if (typeof testee === 'string' || testee instanceof String) {
 						output = "string";
 					}
 					// number
 					if (_.isNumber(testee)) {
 						output = "number";
 					}
+					return output;
 				}
 				
 				function eachRecursive(obj, complete_object) {
@@ -145,7 +145,7 @@
 									
 									var temp_obj = [];
 									var check_varster = subset[thematic_group][current_field][current_object[k]];
-									
+																	
 									// if current case is array
 									if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
 											
