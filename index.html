@@ -23,17 +23,17 @@
 		<div id="container_element">
 		
 			<div id="buttons">
+				<div class="dropdown">
+					<button class="dropbtn">Select Model</button>
+					<div id="model_selector" class="dropdown-content">
+						<a href="#" id="ssm">Site Metadata Model</a>
+						<a href="#" id="semm">Sensor Metadata Model</a>
+					</div>
+				</div>
 				<a href="#" id="collapse-all" class="button_elements">Collapse All</a>
 				<a href="#" id="expand-all" class="button_elements">Expand All</a>
 				<input type="text" id="search" placeholder="Search ...">
-				<div class="dropdown">
-				  <button class="dropbtn">Dropdown</button>
-				  <div id="model_selector" class="dropdown-content">
-					<a href="#" id="ssm" >Site Metadata Model</a>
-					<a href="#" id="semm">Sensor Metadata Model</a>
-					<a href="#" id="other">Other stuff</a>
-				  </div>
-				</div>
+				
 			</div>
 			
 			<h3>About this document</h2>
@@ -54,13 +54,17 @@
 
 		<script>
 			
-			
 			$('#model_selector').on('click', "a", function(){
-			  var model_name = $(this).attr('id');
-			  load_model(model_name);
+				
+				// flush fields 
+				$("#metadata_content").empty();				
+				d3.select("svg").remove();
+		
+				var model_name = $(this).attr('id');
+				load_model(model_name);
+				
 			});
 		
-
 			// Site Metadata Model
 			// https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/ssm.json
 			// https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/semm.json
@@ -233,6 +237,7 @@
 					var diagonal = d3.svg.diagonal()
 						.projection(function(d) { return [d.y, d.x]; });
 
+					
 					var svg = d3.select("body").append("svg")
 						.attr("width", width + margin.right + margin.left)
 						.attr("height", height + margin.top + margin.bottom)
