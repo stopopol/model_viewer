@@ -7,13 +7,13 @@
 		<script src="js/jquery-3.2.1.min.js"></script> 
 		<script src="js/jquery.jsonbrowser.js"></script>
 		<script src="js/d3.v3.min.js"></script>
-		<!--<script src="http://d3js.org/d3.v4.min.js"></script>-->
 		<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
 		<script src="js/lodash.min.js"></script> <!--  v.1.8.3, lodash just makes your life easier -->
 		
 		<!-- stylesheets -->
 		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 		<link rel="stylesheet" href="stylesheets/jquery.jsonbrowser.css">
+		<link rel="stylesheet" href="stylesheets/model_viewer.css">
 		<link rel="stylesheet" href="font-awesome/css/font-awesome.css">
 		<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
 	</head>
@@ -26,6 +26,14 @@
 				<a href="#" id="collapse-all" class="button_elements">Collapse All</a>
 				<a href="#" id="expand-all" class="button_elements">Expand All</a>
 				<input type="text" id="search" placeholder="Search ...">
+				<div class="dropdown">
+				  <button class="dropbtn">Dropdown</button>
+				  <div id="model_selector" class="dropdown-content">
+					<a href="#" id="ssm" >Site Metadata Model</a>
+					<a href="#" id="semm">Sensor Metadata Model</a>
+					<a href="#" id="other">Other stuff</a>
+				  </div>
+				</div>
 			</div>
 			
 			<h3>About this document</h2>
@@ -45,320 +53,333 @@
 		</div>
 
 		<script>
+			
+			
+			$('#model_selector').on('click', "a", function(){
+			  var model_name = $(this).attr('id');
+			  load_model(model_name);
+			});
+		
 
 			// Site Metadata Model
 			// https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/ssm.json
+			// https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/semm.json
 
-			$.getJSON( "https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/ssm.json", function( data ) {
+			function load_model(model_name) {
 			
-				// Print metadata about this document
-				$( metadata_content ).append( "<li>Name: <b>" + data["name"] + "</b></li>" );
-				$( metadata_content ).append( "<li>Abbreviation: <b>" + data["abbreviation"] + "</b></li>" );
-				$( metadata_content ).append( "<li>Version: <b>" + data["version"] + "</b></li>" );
-				$( metadata_content ).append( "<li>Release Date: <b>" + data["releaseDate"] + "</b></li>" );
-				$( metadata_content ).append( "<li>Scope: <b>" + data["scope"] + "</b></li>" );
-			
-				// Print the content
-				$('#browser').jsonbrowser(data["content"]);
-				// start collapsed
-				$.jsonbrowser.collapseAll('#browser')
+				var model_url =  "https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/" + model_name + ".json";
+				$.getJSON( model_url, function( data ) {
 				
-				// ************** Generate the tree diagram	 *****************
+					// Print metadata about this document
+					$( metadata_content ).append( "<li>Name: <b>" + data["name"] + "</b></li>" );
+					$( metadata_content ).append( "<li>Abbreviation: <b>" + data["abbreviation"] + "</b></li>" );
+					$( metadata_content ).append( "<li>Version: <b>" + data["version"] + "</b></li>" );
+					$( metadata_content ).append( "<li>Release Date: <b>" + data["releaseDate"] + "</b></li>" );
+					$( metadata_content ).append( "<li>Scope: <b>" + data["scope"] + "</b></li>" );
 				
-				var transformed_object = _.map( data["content"], (value, key) => ({key,value}) );
-			
-				// https://bl.ocks.org/mbostock/4339083
+					// Print the content
+					$('#browser').jsonbrowser(data["content"]);
+					// start collapsed
+					$.jsonbrowser.collapseAll('#browser')
+					
+					// ************** Generate the tree diagram	 *****************
+					
+					var transformed_object = _.map( data["content"], (value, key) => ({key,value}) );
 				
-				// actual content of json
-				var subset = data["content"];
-				var fields_list = [];
-				var construct_sub_fields = [];
-				
-				// TODO: simplify recursive loop using this function
-				// output relevant types
-				function checkinputtype(testee) {
-					// object
-					var output = "_unknown";
-					if (testee !== null && typeof testee === 'object') {			
-						output = "object";
-					}
-					// array
-					if (Array.isArray(testee)) {
-						output = "array";					
-					}
-					// null or undefined
-					if (testee == null){
-						output = "null";
-					}
-					// string 
-					if (typeof testee === 'string' || testee instanceof String) {
-						output = "string";
-					}
-					// number
-					if (_.isNumber(testee)) {
-						output = "number";
-					}
-					return output;
-				}
-				
-				function eachRecursive(obj, complete_object) {
-					var complete_object = [];
-					for (var k in obj) {
-						if (typeof obj[k] == "object" && obj[k] !== null) {
-							// case children
-							eachRecursive(obj[k]);
-							//console.log("working in if. value is: " + k + "; type is: " + typeof(k));
-							// push children too
-							//complete_object.push({"name" : k, "children":2343})
-							
-						}
-						else {
-							// case no children
-							//console.log("working in else. value is: " + k + "; type is: " + typeof(k));
-							complete_object.push({"name" : k, "children":2343});
-						}
-							
-					}
-					return complete_object;
-				}		
-				
-				for (i = 0; i < Object.keys(subset).length; i++) {
-				
-					var first_level_keys = subset[Object.keys(subset)[i]];
-					var sub_fields_key = Object.keys(first_level_keys);
+					// https://bl.ocks.org/mbostock/4339083
+					
+					// actual content of json
+					var subset = data["content"];
+					var fields_list = [];
 					var construct_sub_fields = [];
 					
-					for (j = 0; j < sub_fields_key.length; j++) {
+					// TODO: simplify recursive loop using this function
+					// output relevant types
+					function checkinputtype(testee) {
+						// object
+						var output = "_unknown";
+						if (testee !== null && typeof testee === 'object') {			
+							output = "object";
+						}
+						// array
+						if (Array.isArray(testee)) {
+							output = "array";					
+						}
+						// null or undefined
+						if (testee == null) {
+							output = "null";
+						}
+						// string 
+						if (typeof testee === 'string' || testee instanceof String) {
+							output = "string";
+						}
+						// number
+						if (_.isNumber(testee)) {
+							output = "number";
+						}
+						return output;
+					}
 					
-						var thematic_group = Object.keys(subset)[i];
-						var current_field = sub_fields_key[j];
-						var current_object = Object.keys(subset[thematic_group][current_field]);
+					function eachRecursive(obj, complete_object) {
+						var complete_object = [];
+						for (var k in obj) {
+							if (typeof obj[k] == "object" && obj[k] !== null) {
+								// case children
+								eachRecursive(obj[k]);
+								//console.log("working in if. value is: " + k + "; type is: " + typeof(k));
+								// push children too
+								//complete_object.push({"name" : k, "children":2343})
+								
+							}
+							else {
+								// case no children
+								//console.log("working in else. value is: " + k + "; type is: " + typeof(k));
+								complete_object.push({"name" : k, "children":2343});
+							}
+								
+						}
+						return complete_object;
+					}		
+					
+					for (i = 0; i < Object.keys(subset).length; i++) {
+					
+						var first_level_keys = subset[Object.keys(subset)[i]];
+						var sub_fields_key = Object.keys(first_level_keys);
+						var construct_sub_fields = [];
 						
-						if (current_object.length > 1) {
+						for (j = 0; j < sub_fields_key.length; j++) {
+						
+							var thematic_group = Object.keys(subset)[i];
+							var current_field = sub_fields_key[j];
+							var current_object = Object.keys(subset[thematic_group][current_field]);
 							
-							var children = [];
-							for (k = 0; k < current_object.length; k++) {
-							
-								var temp_keys = Object.keys(subset[thematic_group][current_field][current_object[k]]);
-								// if object has children
-								if (temp_keys.length > 1) {
-									
-									var temp_obj = [];
-									var check_varster = subset[thematic_group][current_field][current_object[k]];
-																	
-									// if current case is array
-									if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
-											
-										var subsub_set = subset[thematic_group][current_field][current_object[k]];
-										for (var l = 0; l < subsub_set.length; l++) {
-											temp_obj.push({"name" : subsub_set[l], "size": ""});
-										} 
-									}
-									// if object
-									else if (check_varster !== null && typeof check_varster === 'object') {
+							if (current_object.length > 1) {
+								
+								var children = [];
+								for (k = 0; k < current_object.length; k++) {
+								
+									var temp_keys = Object.keys(subset[thematic_group][current_field][current_object[k]]);
+									// if object has children
+									if (temp_keys.length > 1) {
 										
-										// if object									
-										if (check_varster !== null && typeof check_varster === 'object') {
+										var temp_obj = [];
+										var check_varster = subset[thematic_group][current_field][current_object[k]];
+																		
+										// if current case is array
+										if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
 												
-											var tempster = [];
-											for (var m = 0; m < Object.keys(check_varster).length; m++) {
-												temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
+											var subsub_set = subset[thematic_group][current_field][current_object[k]];
+											for (var l = 0; l < subsub_set.length; l++) {
+												temp_obj.push({"name" : subsub_set[l], "size": ""});
+											} 
+										}
+										// if object
+										else if (check_varster !== null && typeof check_varster === 'object') {
+											
+											// if object									
+											if (check_varster !== null && typeof check_varster === 'object') {
+													
+												var tempster = [];
+												for (var m = 0; m < Object.keys(check_varster).length; m++) {
+													temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
+												}
 											}
+											
+										}
+										// if regular value
+										else {
+											temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
 										}
 										
+										children.push({"name" : current_object[k], "children": temp_obj});
 									}
-									// if regular value
+									// if object has no children
 									else {
-										temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
+										children.push({"name" : current_object[k], "size": ""});
 									}
-									
-									children.push({"name" : current_object[k], "children": temp_obj});
+								
 								}
-								// if object has no children
-								else {
-									children.push({"name" : current_object[k], "size": ""});
-								}
-							
+								construct_sub_fields.push({"name" : sub_fields_key[j], "children": children});
+						
 							}
-							construct_sub_fields.push({"name" : sub_fields_key[j], "children": children});
-					
-						}
-						else {
-							construct_sub_fields.push({"name" : sub_fields_key[j], "size": 2343});
-						}
+							else {
+								construct_sub_fields.push({"name" : sub_fields_key[j], "size": 2343});
+							}
+							
+						}  
 						
-					}  
+						fields_list.push({"name" : Object.keys(subset)[i], "children" : construct_sub_fields});
+
+					}		
 					
-					fields_list.push({"name" : Object.keys(subset)[i], "children" : construct_sub_fields});
-
-				}		
-				
-				var b = {
-					"name": data["name"] + data["version"], 
-					"children": fields_list			
-				}
-				var read_json = b;
-				
-				// TODO: get viewport height and enter it under width
-				var margin = {top: 20, right: 120, bottom: 20, left: 220},
-					width = 1960 - margin.right - margin.left,
-					height = 800 - margin.top - margin.bottom;
-
-				var i = 0,
-					duration = 750,
-					root;
-
-				var tree = d3.layout.tree()
-					.size([height, width]);
-
-				var diagonal = d3.svg.diagonal()
-					.projection(function(d) { return [d.y, d.x]; });
-
-				var svg = d3.select("body").append("svg")
-					.attr("width", width + margin.right + margin.left)
-					.attr("height", height + margin.top + margin.bottom)
-				  .append("g")
-					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-			
-
-				  root = read_json;
-				  root.x0 = height / 2;
-				  root.y0 = 0;
-
-				  function collapse(d) {
-					if (d.children) {
-					  d._children = d.children;
-					  d._children.forEach(collapse);
-					  d.children = null;
+					var b = {
+						"name": data["name"] + ' ' + data["version"], 
+						"children": fields_list			
 					}
-				  }
+					var read_json = b;
+					
+					// TODO: get viewport height and enter it under width
+					var margin = {top: 20, right: 120, bottom: 20, left: 220},
+						width = 1960 - margin.right - margin.left,
+						height = 800 - margin.top - margin.bottom;
 
-				  root.children.forEach(collapse);
-				  update(root);
-			
+					var i = 0,
+						duration = 750,
+						root;
 
-				d3.select(self.frameElement).style("height", "800px");
+					var tree = d3.layout.tree()
+						.size([height, width]);
 
-				function update(source) {
+					var diagonal = d3.svg.diagonal()
+						.projection(function(d) { return [d.y, d.x]; });
 
-				  // Compute the new tree layout.
-				  var nodes = tree.nodes(root).reverse(),
-					  links = tree.links(nodes);
+					var svg = d3.select("body").append("svg")
+						.attr("width", width + margin.right + margin.left)
+						.attr("height", height + margin.top + margin.bottom)
+					  .append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				
 
-				  // Normalize for fixed-depth.
-				  nodes.forEach(function(d) { d.y = d.depth * 180; });
+					  root = read_json;
+					  root.x0 = height / 2;
+					  root.y0 = 0;
 
-				  // Update the nodes…
-				  var node = svg.selectAll("g.node")
-					  .data(nodes, function(d) { return d.id || (d.id = ++i); });
+					  function collapse(d) {
+						if (d.children) {
+						  d._children = d.children;
+						  d._children.forEach(collapse);
+						  d.children = null;
+						}
+					  }
 
-				  // Enter any new nodes at the parent's previous position.
-				  var nodeEnter = node.enter().append("g")
-					  .attr("class", "node")
-					  .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-					  .on("click", click);
+					  root.children.forEach(collapse);
+					  update(root);
+				
 
-				  nodeEnter.append("circle")
-					  .attr("r", 1e-6)
-					  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+					d3.select(self.frameElement).style("height", "800px");
 
-				  nodeEnter.append("text")
-					  .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-					  .attr("dy", ".35em")
-					  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-					  .text(function(d) { return d.name; })
-					  .style("fill-opacity", 1e-6);
+					function update(source) {
 
-				  // Transition nodes to their new position.
-				  var nodeUpdate = node.transition()
-					  .duration(duration)
-					  .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+					  // Compute the new tree layout.
+					  var nodes = tree.nodes(root).reverse(),
+						  links = tree.links(nodes);
 
-				  nodeUpdate.select("circle")
-					  .attr("r", 4.5)
-					  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+					  // Normalize for fixed-depth.
+					  nodes.forEach(function(d) { d.y = d.depth * 180; });
 
-				  nodeUpdate.select("text")
-					  .style("fill-opacity", 1);
+					  // Update the nodes…
+					  var node = svg.selectAll("g.node")
+						  .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
-				  // Transition exiting nodes to the parent's new position.
-				  var nodeExit = node.exit().transition()
-					  .duration(duration)
-					  .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-					  .remove();
+					  // Enter any new nodes at the parent's previous position.
+					  var nodeEnter = node.enter().append("g")
+						  .attr("class", "node")
+						  .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+						  .on("click", click);
 
-				  nodeExit.select("circle")
-					  .attr("r", 1e-6);
+					  nodeEnter.append("circle")
+						  .attr("r", 1e-6)
+						  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
-				  nodeExit.select("text")
-					  .style("fill-opacity", 1e-6);
+					  nodeEnter.append("text")
+						  .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+						  .attr("dy", ".35em")
+						  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+						  .text(function(d) { return d.name; })
+						  .style("fill-opacity", 1e-6);
 
-				  // Update the links…
-				  var link = svg.selectAll("path.link")
-					  .data(links, function(d) { return d.target.id; });
+					  // Transition nodes to their new position.
+					  var nodeUpdate = node.transition()
+						  .duration(duration)
+						  .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
-				  // Enter any new links at the parent's previous position.
-				  link.enter().insert("path", "g")
-					  .attr("class", "link")
-					  .attr("d", function(d) {
-						var o = {x: source.x0, y: source.y0};
-						return diagonal({source: o, target: o});
+					  nodeUpdate.select("circle")
+						  .attr("r", 4.5)
+						  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+					  nodeUpdate.select("text")
+						  .style("fill-opacity", 1);
+
+					  // Transition exiting nodes to the parent's new position.
+					  var nodeExit = node.exit().transition()
+						  .duration(duration)
+						  .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+						  .remove();
+
+					  nodeExit.select("circle")
+						  .attr("r", 1e-6);
+
+					  nodeExit.select("text")
+						  .style("fill-opacity", 1e-6);
+
+					  // Update the links…
+					  var link = svg.selectAll("path.link")
+						  .data(links, function(d) { return d.target.id; });
+
+					  // Enter any new links at the parent's previous position.
+					  link.enter().insert("path", "g")
+						  .attr("class", "link")
+						  .attr("d", function(d) {
+							var o = {x: source.x0, y: source.y0};
+							return diagonal({source: o, target: o});
+						  });
+
+					  // Transition links to their new position.
+					  link.transition()
+						  .duration(duration)
+						  .attr("d", diagonal);
+
+					  // Transition exiting nodes to the parent's new position.
+					  link.exit().transition()
+						  .duration(duration)
+						  .attr("d", function(d) {
+							var o = {x: source.x, y: source.y};
+							return diagonal({source: o, target: o});
+						  })
+						  .remove();
+
+					  // Stash the old positions for transition.
+					  nodes.forEach(function(d) {
+						d.x0 = d.x;
+						d.y0 = d.y;
 					  });
+					}
 
-				  // Transition links to their new position.
-				  link.transition()
-					  .duration(duration)
-					  .attr("d", diagonal);
-
-				  // Transition exiting nodes to the parent's new position.
-				  link.exit().transition()
-					  .duration(duration)
-					  .attr("d", function(d) {
-						var o = {x: source.x, y: source.y};
-						return diagonal({source: o, target: o});
-					  })
-					  .remove();
-
-				  // Stash the old positions for transition.
-				  nodes.forEach(function(d) {
-					d.x0 = d.x;
-					d.y0 = d.y;
-				  });
-				}
-
-				// Toggle children on click.
-				function click(d) {
-				  if (d.children) {
-					d._children = d.children;
-					d.children = null;
-				  } else {
-					d.children = d._children;
-					d._children = null;
-				  }
-				  update(d);
-				}
-						
-			});
+					// Toggle children on click.
+					function click(d) {
+					  if (d.children) {
+						d._children = d.children;
+						d.children = null;
+					  } else {
+						d.children = d._children;
+						d._children = null;
+					  }
+					  update(d);
+					}
+							
+				});
+				
+				// ***************************************** d3 end ******************************************************************************
+				
+				// Button handlers
+				$('#collapse-all').on('click', function(e) {
+					e.preventDefault();
+					$.jsonbrowser.collapseAll('#browser');
+				});
+							
+				$('#expand-all').on('click', function(e) {
+					e.preventDefault();
+					$.jsonbrowser.expandAll('#browser');
+				});
+				
+				$('#search').on('keyup', function(e) {
+					e.preventDefault();
+					$.jsonbrowser.search('#browser', $(this).val());
+				});
+				
+				$('#search').focus().trigger('keyUp');
 			
-			// ***************************************** d3 end ******************************************************************************
-			
-			// Button handlers
-			$('#collapse-all').on('click', function(e) {
-				e.preventDefault();
-				$.jsonbrowser.collapseAll('#browser');
-			});
-						
-			$('#expand-all').on('click', function(e) {
-				e.preventDefault();
-				$.jsonbrowser.expandAll('#browser');
-			});
-			
-			$('#search').on('keyup', function(e) {
-				e.preventDefault();
-				$.jsonbrowser.search('#browser', $(this).val());
-			});
-			
-			$('#search').focus().trigger('keyUp');
+			}
 
 		</script>
 	</body>
