@@ -76,6 +76,7 @@
 				
 				// TODO: simplify recursive loop using this function
 				// take object 
+				// push each term with its complete path?
 				function eachRecursive(obj, complete_object) {
 					var complete_object = [];
 					for (var k in obj) {
@@ -118,27 +119,38 @@
 							var children = [];
 							for (k = 0; k < current_object.length; k++) {
 							
+								var temp_keys = Object.keys(subset[thematic_group][current_field][current_object[k]]);
 								// if object has children
-								if (subset[thematic_group][current_field][current_object[k]].length > 1) {
+								if (temp_keys.length > 1) {
 									
 									var temp_obj = [];
+									var check_varster = subset[thematic_group][current_field][current_object[k]];
 									
-										// if current case is array
-										if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
+									// if current case is array
+									if (Array.isArray(subset[thematic_group][current_field][current_object[k]])) {
 											
-											var subsub_set = subset[thematic_group][current_field][current_object[k]];
-											var tempster = [];
-											for (var l = 0; l < subsub_set.length; l++) {
-											
-												temp_obj.push({"name" : subsub_set[l], "size": ""});
+										var subsub_set = subset[thematic_group][current_field][current_object[k]];
+										for (var l = 0; l < subsub_set.length; l++) {
+											temp_obj.push({"name" : subsub_set[l], "size": ""});
+										} 
+									}
+									// if object
+									else if (check_varster !== null && typeof check_varster === 'object') {
+										
+										// if object									
+										if (check_varster !== null && typeof check_varster === 'object') {
 												
-											} 
-
+											var tempster = [];
+											for (var m = 0; m < Object.keys(check_varster).length; m++) {
+												temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
+											}
 										}
-										// else just print it
-										else {
-											temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
-										}
+										
+									}
+									// if regular value
+									else {
+										temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
+									}
 									
 									children.push({"name" : current_object[k], "children": temp_obj});
 								}
