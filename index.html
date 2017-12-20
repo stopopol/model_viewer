@@ -155,19 +155,18 @@
 							var current_field = sub_fields_key[j];
 							var current_object = Object.keys(subset[thematic_group][current_field]);
 						
+							
 						
 							if (current_object.length > 1) {
 								
 								var children = [];
 								for (k = 0; k < current_object.length; k++) {
-								
+									
 									var temp_keys = Object.keys(subset[thematic_group][current_field][current_object[k]]);
 									
 									// stop if you find "field_name"
-									if (subset[thematic_group][current_field][current_object[k]].hasOwnProperty('field_name')) {
-										console.log("triggered");
-										console.log(subset[thematic_group][current_field][current_object[k]]);
-										//break;
+									if (subset[thematic_group][current_field].hasOwnProperty('field_name')) {
+										break;
 									}
 								
 									// if object has children
@@ -189,6 +188,10 @@
 											
 											var tempster = [];
 											for (var m = 0; m < Object.keys(check_varster).length; m++) {
+												
+												if (check_varster.hasOwnProperty('field_name')) {
+													break;
+												}
 												temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
 											}
 											
@@ -229,7 +232,7 @@
 					var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 					var margin = {top: 20, right: 120, bottom: 20, left: 220},
 						width = viewport_width - margin.right - margin.left - 50,
-						height = 800 - margin.top - margin.bottom;
+						height = 1200 - margin.top - margin.bottom;
 
 					var i = 0,
 						duration = 750,
@@ -257,7 +260,8 @@
 						if (d.children) {
 						  d._children = d.children;
 						  d._children.forEach(collapse);
-						  d.children = null;
+						  //d.children = null; // start collapsed
+						  d._children = null; // start open
 						}
 					  }
 
