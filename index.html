@@ -85,17 +85,23 @@
 					// start collapsed
 					$.jsonbrowser.collapseAll('#browser')
 					
-					// ************** Generate the tree diagram	 *****************
-					
-					var transformed_object = _.map( data["content"], (value, key) => ({key,value}) );
-				
+					// ************** Generate the tree diagram	using d3.js **********************************************************************************
 					// https://bl.ocks.org/mbostock/4339083
 					
 					// actual content of json
 					var subset = data["content"];
 					var fields_list = [];
-					var construct_sub_fields = [];
 					
+					// get maximum broadness of object
+					function object_broadness(obj) {
+						var counter = 0;
+						_.forIn(obj, function(value, key) {
+							if (checkinputtype(value) == "object"){
+								counter+= Object.keys(value).length;
+							}
+						});
+						return counter;
+					}
 					
 					function shorten_text_values(string_to_be_cut) {
 						
@@ -151,11 +157,8 @@
 						for (j = 0; j < sub_fields_key.length; j++) {
 						
 							var thematic_group = Object.keys(subset)[i];
-			
 							var current_field = sub_fields_key[j];
 							var current_object = Object.keys(subset[thematic_group][current_field]);
-						
-							
 						
 							if (current_object.length > 1) {
 								
@@ -228,30 +231,29 @@
 					}
 					var read_json = b;
 					
-					// TODO: get viewport height and enter it under width
+					var calc_height = object_broadness(subset) * 30;
 					var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 					var margin = {top: 20, right: 120, bottom: 20, left: 220},
 						width = viewport_width - margin.right - margin.left - 50,
-						height = 1200 - margin.top - margin.bottom;
+						height = calc_height - margin.top - margin.bottom;
 
 					var i = 0,
 						duration = 750,
 						root;
 
 					var tree = d3.layout.tree()
-						.size([height, width]);
-
+						.size([height, width]); 
+			
 					var diagonal = d3.svg.diagonal()
 						.projection(function(d) { return [d.y, d.x]; });
 
-					
 					var svg = d3.select("body").append("svg")
 						.attr("width", width + margin.right + margin.left)
 						.attr("height", height + margin.top + margin.bottom)
 					  .append("g")
-						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+						;
 				
-
 					  root = read_json;
 					  root.x0 = height / 2;
 					  root.y0 = 0;
@@ -278,7 +280,7 @@
 						  links = tree.links(nodes);
 
 					  // Normalize for fixed-depth.
-					  nodes.forEach(function(d) { d.y = d.depth * 180; });
+					  //nodes.forEach(function(d) { d.y = d.depth * 180; });
 
 					  // Update the nodes…
 					  var node = svg.selectAll("g.node")
@@ -369,7 +371,7 @@
 					  }
 					  update(d);
 					}
-							
+	
 				});
 				
 				// ***************************************** d3 end ******************************************************************************
