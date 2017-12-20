@@ -96,6 +96,24 @@
 					var fields_list = [];
 					var construct_sub_fields = [];
 					
+					
+					function shorten_text_values(string_to_be_cut) {
+						
+						var maxLength = 120 // maximum number of characters to extract
+						//trim the string to the maximum length
+						if (string_to_be_cut.length > maxLength) {
+							var trimmedString = string_to_be_cut.substr(0, maxLength);
+							//re-trim if we are in the middle of a word
+							trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
+							trimmedString += " [...]";
+							return trimmedString;
+						}
+						else {
+							return string_to_be_cut;
+						}
+						
+					}
+				
 					// TODO: simplify recursive loop using this function
 					// output relevant types
 					function checkinputtype(testee) {
@@ -123,27 +141,7 @@
 						return output;
 					}
 					
-					function eachRecursive(obj, complete_object) {
-						var complete_object = [];
-						for (var k in obj) {
-							if (typeof obj[k] == "object" && obj[k] !== null) {
-								// case children
-								eachRecursive(obj[k]);
-								//console.log("working in if. value is: " + k + "; type is: " + typeof(k));
-								// push children too
-								//complete_object.push({"name" : k, "children":2343})
-								
-							}
-							else {
-								// case no children
-								//console.log("working in else. value is: " + k + "; type is: " + typeof(k));
-								complete_object.push({"name" : k, "children":2343});
-							}
-								
-						}
-						return complete_object;
-					}		
-					
+					// include case that when you find a "field_name" you end the current loop
 					for (i = 0; i < Object.keys(subset).length; i++) {
 					
 						var first_level_keys = subset[Object.keys(subset)[i]];
@@ -153,15 +151,25 @@
 						for (j = 0; j < sub_fields_key.length; j++) {
 						
 							var thematic_group = Object.keys(subset)[i];
+			
 							var current_field = sub_fields_key[j];
 							var current_object = Object.keys(subset[thematic_group][current_field]);
-							
+						
+						
 							if (current_object.length > 1) {
 								
 								var children = [];
 								for (k = 0; k < current_object.length; k++) {
 								
 									var temp_keys = Object.keys(subset[thematic_group][current_field][current_object[k]]);
+									
+									// stop if you find "field_name"
+									if (subset[thematic_group][current_field][current_object[k]].hasOwnProperty('field_name')) {
+										console.log("triggered");
+										console.log(subset[thematic_group][current_field][current_object[k]]);
+										//break;
+									}
+								
 									// if object has children
 									if (temp_keys.length > 1) {
 										
@@ -174,24 +182,20 @@
 											var subsub_set = subset[thematic_group][current_field][current_object[k]];
 											for (var l = 0; l < subsub_set.length; l++) {
 												temp_obj.push({"name" : subsub_set[l], "size": ""});
-											} 
+											}
 										}
 										// if object
 										else if (check_varster !== null && typeof check_varster === 'object') {
 											
-											// if object									
-											if (check_varster !== null && typeof check_varster === 'object') {
-													
-												var tempster = [];
-												for (var m = 0; m < Object.keys(check_varster).length; m++) {
-													temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
-												}
+											var tempster = [];
+											for (var m = 0; m < Object.keys(check_varster).length; m++) {
+												temp_obj.push({"name" : Object.keys(check_varster)[m], "size": ""});
 											}
 											
 										}
 										// if regular value
 										else {
-											temp_obj.push({"name" : (subset[thematic_group][current_field][current_object[k]]), "size": ""});
+											temp_obj.push({"name" : shorten_text_values(subset[thematic_group][current_field][current_object[k]]), "size": ""});
 										}
 										
 										children.push({"name" : current_object[k], "children": temp_obj});
@@ -212,18 +216,19 @@
 						}  
 						
 						fields_list.push({"name" : Object.keys(subset)[i], "children" : construct_sub_fields});
-
+						
 					}		
 					
 					var b = {
-						"name": data["name"] + ' ' + data["version"], 
+						"name": data["name"] + ' v.' + data["version"], 
 						"children": fields_list			
 					}
 					var read_json = b;
 					
 					// TODO: get viewport height and enter it under width
+					var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 					var margin = {top: 20, right: 120, bottom: 20, left: 220},
-						width = 1960 - margin.right - margin.left,
+						width = viewport_width - margin.right - margin.left - 50,
 						height = 800 - margin.top - margin.bottom;
 
 					var i = 0,
