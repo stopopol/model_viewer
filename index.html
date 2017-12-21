@@ -72,6 +72,32 @@
 
 			function load_model(model_name) {
 			
+				// check if the browser is Internet explorer and print a message
+				browser={};
+				if (/(chrome\/[0-9]{2})/i.test(navigator.userAgent)) {
+					browser.agent = navigator.userAgent.match(/(chrome\/[0-9]{2})/i)[0].split("/")[0];
+					browser.version  = parseInt(navigator.userAgent.match(/(chrome\/[0-9]{2})/i)[0].split("/")[1]);
+				} else if (/(firefox\/[0-9]{2})/i.test(navigator.userAgent)) {
+					browser.agent = navigator.userAgent.match(/(firefox\/[0-9]{2})/i)[0].split("/")[0];
+					browser.version  = parseInt(navigator.userAgent.match(/(firefox\/[0-9]{2})/i)[0].split("/")[1]);
+				} else if (/(MSIE\ [0-9]{1})/i.test(navigator.userAgent)) {
+					browser.agent = navigator.userAgent.match(/(MSIE\ [0-9]{1})/i)[0].split(" ")[0];
+					browser.version  = parseInt(navigator.userAgent.match(/(MSIE\ [0-9]{1})/i)[0].split(" ")[1]);
+				} else if (/(Opera\/[0-9]{1})/i.test(navigator.userAgent)) {
+					browser.agent = navigator.userAgent.match(/(Opera\/[0-9]{1})/i)[0].split("/")[0];
+					browser.version  = parseInt(navigator.userAgent.match(/(Opera\/[0-9]{1})/i)[0].split("/")[1]);
+				} else if (/(Trident\/[7]{1})/i.test(navigator.userAgent)) {
+					browser.agent = "MSIE";
+					browser.version  = 11;
+				} else {
+					browser.agent = false;
+					browser.version  = false;
+				}
+				
+				if (browser.agent == "MSIE") {
+					$( "#model-container" ).append( "<p>The diagram cannot be viewed using Internet Explorer. Start using a better browser :/</p>" );
+				}
+			
 				var model_url =  "https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/" + model_name + ".json";
 				$.getJSON( model_url, function( data ) {
 				
