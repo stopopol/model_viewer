@@ -196,7 +196,7 @@
 							var current_field = sub_fields_key[j];
 							var current_object = Object.keys(subset[thematic_group][current_field]);
 						
-							if (current_object.length > 1) {
+							if (current_object.length > 0) {
 								
 								var children = [];
 								for (k = 0; k < current_object.length; k++) {
@@ -209,7 +209,7 @@
 									}
 								
 									// if object has children
-									if (temp_keys.length > 1) {
+									if (temp_keys.length > 0) {
 										
 										var temp_obj = [];
 										var check_varster = subset[thematic_group][current_field][current_object[k]];
