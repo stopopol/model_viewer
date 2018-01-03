@@ -187,6 +187,11 @@
 						
 						for (j = 0; j < sub_fields_key.length; j++) {
 						
+							// stop if you find "field_name"
+							if (first_level_keys.hasOwnProperty('field_name')) {
+								break;
+							}
+						
 							var thematic_group = Object.keys(subset)[i];
 							var current_field = sub_fields_key[j];
 							var current_object = Object.keys(subset[thematic_group][current_field]);
