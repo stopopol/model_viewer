@@ -28,7 +28,7 @@
 
 .jsonbrowser li.collapsible > .key {
   cursor : pointer;
-  color : #4CAF50;
+  color :  #339900;
 }
 
 .jsonbrowser li.collapsible > .key:hover {
