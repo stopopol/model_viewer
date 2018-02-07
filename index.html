@@ -109,6 +109,7 @@
 					$( metadata_content ).append( "<li>Version: <b>" + data["version"] + "</b></li>" );
 					$( metadata_content ).append( "<li>Release Date: <b>" + data["releaseDate"] + "</b></li>" );
 					$( metadata_content ).append( "<li>Scope: <b>" + data["scope"] + "</b></li>" );
+					$( metadata_content ).append( "<li>Download: <b><a href=" + model_url + "> [.json]</a></li>" );
 				
 					// Print the content
 					$('#browser').jsonbrowser(data["content"]);
