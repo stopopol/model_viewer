@@ -121,9 +121,11 @@ $.fn.jsonbrowser = function(json, userOptions) {
                 } else if (Object.keys(val).length == 0) { // empty object
                     $li.append(keyMarkup + ' <span class="value empty-value">{}</span>');
                 } else { // non-empty object
-                    $li.append(keyMarkup + ' ' + ($.isArray(val) ? '[' : '{'));
+                    //$li.append(keyMarkup + ' ' + ($.isArray(val) ? '[' : '{'));
+                    $li.append(keyMarkup);
                     generateHtml($li, val);
-                    $li.append($.isArray(val) ? ']' : '}');
+                    //$li.append($.isArray(val) ? ']' : '}');
+                   
                     
                     if (options.collapsible) {
                         $li.addClass($.jsonbrowser.collapsibleClass);
@@ -155,7 +157,7 @@ $.fn.jsonbrowser = function(json, userOptions) {
                     var escaped = $('<div>').text(val).html();
                     
                     if (escaped === '') { // empty string
-                        $val.addClass('empty-value').text('""');
+                        //$val.addClass('empty-value').text('""');
                     } else {
                         if (options.parseURLs) { // URLs
                             if (0 === escaped.indexOf("http://") || 0 === escaped.indexOf("https://")) {
@@ -165,7 +167,7 @@ $.fn.jsonbrowser = function(json, userOptions) {
                             }
                         }
                         if (typeof escaped == 'string') { // make sure we don't overwrite parsed URLs
-                            escaped = '"' + escaped + '"';
+                            //escaped = '"' + escaped + '"';
                         }
                         $val.html(escaped);
                     }
@@ -174,7 +176,7 @@ $.fn.jsonbrowser = function(json, userOptions) {
                 $li.append(keyMarkup + ' ');
                 $li.append($val);
             }
-            $li.append(',');
+            //$li.append(',');
             
             $ul.append($li);
         }
