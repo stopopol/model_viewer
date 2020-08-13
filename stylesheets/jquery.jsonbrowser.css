@@ -28,13 +28,13 @@
 
 .jsonbrowser li.collapsible > .key {
   cursor : pointer;
-  color :  #339900;
+  color :  #0366d6;
 }
 
 .jsonbrowser li.collapsible > .key:hover {
   cursor : pointer;
   text-decoration : underline;
-  color: orange;
+  color: #0366d6;
 }
 
 .jsonbrowser ul.collapsed {
@@ -42,7 +42,7 @@
   display : none; 
 }
 .jsonbrowser ul.collapsed :hover { 
-  color : orange;
+  color : #0366d6;
   display : none; 
 }
 
