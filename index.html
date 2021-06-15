@@ -7,7 +7,7 @@
 		<script src="js/jquery-3.6.0.min.js"></script> 
 		<script src="js/jquery.jsonbrowser.js"></script>
 		<script src="js/d3.v3.min.js"></script>
-		<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+		<script type="text/javascript" src="bootstrap-5.0.1-dist/js/bootstrap.js"></script>
 		<script src="js/lodash.min.js"></script> <!--  v.4.17.21, lodash just makes your life easier -->
 		
 		<!-- stylesheets -->
@@ -56,7 +56,38 @@
 		</div>
 
 		<script>
-			
+
+			// for reading the deims.id from the url parameters
+			if (window.location.search) {
+				var urlParams = new URLSearchParams(window.location.search);
+				if (urlParams.get('model')) {
+					switch (urlParams.get('model')) {
+					  case "activity":
+						load_model('amm');
+						break;
+					  case "dataset":
+					    load_model('dsmm');
+						break;
+					  case "network":
+					    load_model('nmm');
+						break;
+					  case "location":
+					    load_model('lmm');
+						break;
+					  case "person":
+					    load_model('pmm');
+						break;
+					  case "sensor":
+					    load_model('semm');
+						break;
+					  case "site":
+					    load_model('smm');
+						break;
+					}
+				}
+			}
+
+
 			$('#model_selector').on('click', "a", function(){
 				
 				// flush fields 
