@@ -129,8 +129,7 @@
 				d3.select("svg").remove();
 		
 				var model_name = $(this).attr('id');
-				load_model(model_name);
-				
+				load_model(model_name);				
 			});
 		
 			// urls to files
@@ -169,6 +168,32 @@
 				var model_url =  "https://raw.githubusercontent.com/stopopol/deims_apps/master/metadata_models/" + model_name + ".json";
 				$.getJSON( model_url, function( data ) {
 				
+					// update url in address bar
+					switch (model_name) {
+						case "amm":
+						var model_parameter_name = "activity";
+						break;
+					  case "dsmm":
+					    var model_parameter_name = "dataset";
+						break;
+					  case "nmm":
+					    var model_parameter_name = "network";
+						break;
+					  case "lmm":
+					    var model_parameter_name = "location";
+						break;
+					  case "pmm":
+					    var model_parameter_name = "person";
+						break;
+					  case "semm":
+					    var model_parameter_name = "sensor";
+						break;
+					  case "smm":
+					    var model_parameter_name = "site";
+						break;
+					}
+					history.pushState({}, "Site Record Quality Assurance Tool - ", "?id=" + model_parameter_name)
+
 					// Print metadata about this document
 					$( metadata_content ).append( "<li>Name: <b>" + data["name"] + "</b></li>" );
 					$( metadata_content ).append( "<li>Abbreviation: <b>" + data["abbreviation"] + "</b></li>" );
