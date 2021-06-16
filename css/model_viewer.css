@@ -1,0 +1,16 @@
+.no_underline_link {
+    text-decoration: none;
+}
+
+.no_underline_link:hover {
+    text-decoration: underline;
+}
+
+#nav_menu {
+	background-color: white !important;
+}
+
+#deims_logo {
+    padding: .5rem 1rem;
+    padding-left: 0px;
+}

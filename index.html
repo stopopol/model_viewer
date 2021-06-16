@@ -7,61 +7,95 @@
 		<script src="js/jquery-3.6.0.min.js"></script> 
 		<script src="js/jquery.jsonbrowser.js"></script>
 		<script src="js/d3.v3.min.js"></script>
-		<script type="text/javascript" src="bootstrap-5.0.1-dist/js/bootstrap.js"></script>
+		<script src="bootstrap-5.0.1-dist/js/bootstrap.js"></script>
 		<script src="js/lodash.min.js"></script> <!--  v.4.17.21, lodash just makes your life easier -->
 		
 		<!-- stylesheets -->
-		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="stylesheets/jquery.jsonbrowser.css">
-		<link rel="stylesheet" href="stylesheets/model_viewer.css">
+		<link rel="stylesheet" href="bootstrap-5.0.1-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/jquery.jsonbrowser.css">
+		<link rel="stylesheet" href="css/model_viewer.css">
 		<link rel="stylesheet" href="font-awesome/css/font-awesome.css">
-		<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+		<link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Open Sans'>
 	</head>
-	
-	<body>
-		<div id="container_element">
-		
-			<div id="buttons">
-				<div class="dropdown">
-					<button class="dropbtn">Select Model</button>
-					<div id="model_selector" class="dropdown-content">
-						<a href="#" id="amm">Activity</a>
-						<a href="#" id="dsmm">Dataset</a>
-						<a href="#" id="nmm">Network</a>
-						<a href="#" id="lmm">Location</a>
-						<a href="#" id="pmm">Person</a>
-						<a href="#" id="semm">Sensor</a>
-						<a href="#" id="smm">Site</a>
+			
+	<body>	
+			
+		<nav id="nav_menu" class="navbar navbar-expand-md navbar-light bg-light" aria-label="Fourth navbar example">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#"><a href="https://www.deims.org"><img id="deims_logo" alt="DEIMS-SDR Logo" src="images/logo.png"></a></a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsExample04">
+					<ul class="navbar-nav me-auto mb-2 mb-md-0">
+						<li class="nav-item">
+							<div class="dropdown">
+							  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">Select Data Model</button>
+							  <ul id="model_selector" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+								<li><a class="dropdown-item" id="amm" href="#">Activity</a></li>
+								<li><a class="dropdown-item" id="dsmm" href="#">Dataset</a></li>
+								<li><a class="dropdown-item" id="nmm" href="#">Network</a></li>
+								<li><a class="dropdown-item" id="lmm" href="#">Location</a></li>
+								<li><a class="dropdown-item" id="pmm" href="#">Person</a></li>
+								<li><a class="dropdown-item" id="semm" href="#">Sensor</a></li>
+								<li><a class="dropdown-item" id="smm" href="#">Site</a></li>
+							  </ul>
+							</div>
+						</li>			
+						<li class="nav-item"><a href="#" id="collapse-all" class="button_elements nav-link">Collapse all elements</a></li>
+						<li class="nav-item"><a href="#" id="expand-all" class="button_elements nav-link">Expand all elements</a></li>
+						<li class="nav-item">
+							<input type="text" id="search" placeholder="Search in model ..." class="nav-link">
+						</li>
+					</ul>	
+				</div>
+			</div>
+		</nav>
+
+		<div class="container py-3">
+			<main>
+   				<h3>About this model</h2>
+				<div id="metadata_div">
+					<ul id="metadata_content" style='list-style-type:none'></ul>
+				</div>
+					
+				<h3>Content of model</h2>
+				<div id="browser-container">
+					<div id="browser" class="jsonbrowser"></div>
+				</div>
+					
+				<h3>Diagram of model</h2>
+				<div id="model-container"></div>
+			</main>
+				<footer class="pt-4 my-md-5 pt-md-5 border-top">
+				<div class="row">
+					<div class="col-12 col-md">
+						<small class="d-block mb-3 text-muted">©2021 Umweltbundesamt GmbH</small>			
+					</div>
+					<div class="col-6 col-md">
+						<ul class="list-unstyled text-small">
+							<li><a href="https://deims.org/about" class="no_underline_link">About</a></li>
+							<li><a href="https://deims.org/terms" class="no_underline_link">Terms</a></li>
+							<li><a href="https://deims.org/imprint" class="no_underline_link">Imprint</a></li>
+							<li><a href="https://deims.org/privacy" class="no_underline_link">Privacy</a></li>
+							<li><a href="https://deims.org/contact" class="no_underline_link">Contact</a></li>
+						</ul>
 					</div>
 				</div>
-				<a href="#" id="collapse-all" class="button_elements">Collapse All</a>
-				<a href="#" id="expand-all" class="button_elements">Expand All</a>
-				<input type="text" id="search" placeholder="Search ...">
-			</div>
-			
-			<h3>About this model</h2>
-			<div id="metadata_div">
-				<ul id="metadata_content" style='list-style-type:none'></ul>
-			</div>
-			
-			<h3>Content of model</h2>
-			<div id="browser-container">
-				<div id="browser" class="jsonbrowser"></div>
-			</div>
-			
-			<h3>Diagram of model</h2>
-			<div id="model-container">
-				<svg id="svg_container" width="0" height="0"></svg>
-			</div>
+			</footer>
 		</div>
+	</body>
+	
+</html>
 
-		<script>
+<script>
 
 			// for reading the deims.id from the url parameters
 			if (window.location.search) {
 				var urlParams = new URLSearchParams(window.location.search);
-				if (urlParams.get('model')) {
-					switch (urlParams.get('model')) {
+				if (urlParams.get('id')) {
+					switch (urlParams.get('id')) {
 					  case "activity":
 						load_model('amm');
 						break;
@@ -141,7 +175,7 @@
 					$( metadata_content ).append( "<li>Version: <b>" + data["version"] + "</b></li>" );
 					$( metadata_content ).append( "<li>Release Date: <b>" + data["releaseDate"] + "</b></li>" );
 					$( metadata_content ).append( "<li>Scope: <b>" + data["scope"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Download: <b><a href=" + model_url + " target='_blank'>[.json]</a></li>" );
+					$( metadata_content ).append( "<li>Download: <b><a href=" + model_url + " target='_blank' class='no_underline_link'>[.json]</a></li>" );
 				
 					// Print the content
 					$('#browser').jsonbrowser(data["content"]);
@@ -302,7 +336,7 @@
 					var calc_height = object_broadness(subset) * 30;
 					var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 					var margin = {top: 20, right: 220, bottom: 20, left: 220},
-						width = viewport_width - margin.right - margin.left - 50,
+						width = viewport_width - margin.right - margin.left - 200,
 						height = calc_height - margin.top - margin.bottom;
 
 					var i = 0,
@@ -315,7 +349,7 @@
 					var diagonal = d3.svg.diagonal()
 						.projection(function(d) { return [d.y, d.x]; });
 
-					var svg = d3.select("body").append("svg")
+					var svg = d3.select("#model-container").append("svg")
 						.attr("width", width + margin.right + margin.left)
 						.attr("height", height + margin.top + margin.bottom)
 					  .append("g")
@@ -464,6 +498,4 @@
 			
 			}
 
-		</script>
-	</body>
-</html>
+</script>
