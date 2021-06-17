@@ -55,17 +55,16 @@
 
 		<div class="container py-3">
 			<main>
-   				<h3>About this model</h2>
+   				
 				<div id="metadata_div">
-					<ul id="metadata_content" style='list-style-type:none'></ul>
+					<ul id="metadata_content" style='list-style-type:none'>Please select a data model</ul>
 				</div>
-					
-				<h3>Content of model</h2>
+
 				<div id="browser-container">
 					<div id="browser" class="jsonbrowser"></div>
 				</div>
-					
-				<h3>Diagram of model</h2>
+				
+				<div id="model-heading"></div>
 				<div id="model-container"></div>
 			</main>
 				<footer class="pt-4 my-md-5 pt-md-5 border-top">
@@ -195,18 +194,27 @@
 					history.pushState({}, "Site Record Quality Assurance Tool - ", "?id=" + model_parameter_name)
 
 					// Print metadata about this document
-					$( metadata_content ).append( "<li>Name: <b>" + data["name"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Abbreviation: <b>" + data["abbreviation"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Version: <b>" + data["version"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Release Date: <b>" + data["releaseDate"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Scope: <b>" + data["scope"] + "</b></li>" );
-					$( metadata_content ).append( "<li>Download: <b><a href=" + model_url + " target='_blank' class='no_underline_link'>[.json]</a></li>" );
+					
+					$("#metadata_content").empty();
+					$("#metadata_content").append("<h2>About</h2>");
+					$("#metadata_content").append("<li>Name: <b>" + data["name"] + "</b></li>");
+					$("#metadata_content").append("<li>Abbreviation: <b>" + data["abbreviation"] + "</b></li>");
+					$("#metadata_content").append("<li>Version: <b>" + data["version"] + "</b></li>");
+					$("#metadata_content").append("<li>Release Date: <b>" + data["releaseDate"] + "</b></li>");
+					$("#metadata_content").append("<li>Scope: <b>" + data["scope"] + "</b></li>" );
+					$("#metadata_content").append("<li>Download: <b><a href=" + model_url + " target='_blank' class='no_underline_link'>[.json]</a></li>");
 				
 					// Print the content
 					$('#browser').jsonbrowser(data["content"]);
-					// start collapsed
-					$.jsonbrowser.collapseAll('#browser')
 					
+					$("#metadata_content").append("<br><h2>Content</h2>");
+					$('#model-heading').empty();
+					$('#model-heading').append("<br><h2>Dendrogram</h2>");
+					
+					// start collapsed
+					$.jsonbrowser.collapseAll('#browser');
+
+
 					// ************** Generate the tree diagram	using d3.js **********************************************************************************
 					// https://bl.ocks.org/mbostock/4339083
 					
