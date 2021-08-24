@@ -98,7 +98,7 @@
 				if (urlParams.get('id')) {
 					switch (urlParams.get('id')) {
 					  case "activity":
-						load_model('amm');
+					    load_model('amm');
 						break;
 					  case "dataset":
 					    load_model('dsmm');
@@ -171,7 +171,7 @@
 				
 					// update url in address bar
 					switch (model_name) {
-						case "amm":
+					  case "amm":
 						var model_parameter_name = "activity";
 						break;
 					  case "dsmm":
@@ -370,8 +370,9 @@
 					
 					var calc_height = object_broadness(subset) * 30;
 					var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+					var container_element = document.getElementById("browser-container");
 					var margin = {top: 20, right: 220, bottom: 20, left: 220},
-						width = viewport_width - margin.right - margin.left - 200,
+						width = container_element.offsetWidth  - margin.right - margin.left - 200,
 						height = calc_height - margin.top - margin.bottom;
 
 					var i = 0,
